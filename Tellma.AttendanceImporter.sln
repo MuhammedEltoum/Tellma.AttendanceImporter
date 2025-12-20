@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.EmailLogge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.EmailLogger.Tests", "Tellma.Utilities.EmailLogger.Tests\Tellma.Utilities.EmailLogger.Tests.csproj", "{09F097E6-ED20-43BD-9BED-949D66B87E30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.AttendanceImporter.Connect", "Tellma.AttendanceImporter.Connect\Tellma.AttendanceImporter.Connect.csproj", "{768B0B1F-D1BD-4A43-8BD8-D0F13AE68425}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.AttendanceImporter.Connect.Tests", "Tellma.AttendanceImporter.Connect.Tests\Tellma.AttendanceImporter.Connect.Tests.csproj", "{D723AB50-6624-42BA-846B-C4AFCE5839DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,14 @@ Global
 		{09F097E6-ED20-43BD-9BED-949D66B87E30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09F097E6-ED20-43BD-9BED-949D66B87E30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09F097E6-ED20-43BD-9BED-949D66B87E30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{768B0B1F-D1BD-4A43-8BD8-D0F13AE68425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{768B0B1F-D1BD-4A43-8BD8-D0F13AE68425}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{768B0B1F-D1BD-4A43-8BD8-D0F13AE68425}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{768B0B1F-D1BD-4A43-8BD8-D0F13AE68425}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D723AB50-6624-42BA-846B-C4AFCE5839DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D723AB50-6624-42BA-846B-C4AFCE5839DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D723AB50-6624-42BA-846B-C4AFCE5839DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D723AB50-6624-42BA-846B-C4AFCE5839DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

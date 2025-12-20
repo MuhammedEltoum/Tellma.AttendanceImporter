@@ -15,8 +15,8 @@ namespace Tellma.AttendanceImporter.Zkem.Tests
             {
                 // put real data below
                 Id = 1,
-                IpAddress = "135.181.51.50",
-                Port = 8107, // was 10
+                IpAddress = "192.168.1.250",
+                Port = 4370,
                 Name = "Test Zkem device",
                 DutyStationId = 8,
                 LastSyncTime = new DateTime(2023, 7, 6)

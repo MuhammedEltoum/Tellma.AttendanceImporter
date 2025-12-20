@@ -1,4 +1,5 @@
 using Tellma.AttendanceImporter;
+using Tellma.AttendanceImporter.Connect;
 using Tellma.AttendanceImporter.Samsung;
 using Tellma.AttendanceImporter.WinService;
 using Tellma.AttendanceImporter.Zkem;
@@ -15,6 +16,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.Configure<TellmaOptions>(hostContext.Configuration.GetSection("Tellma"));
         services.AddScoped<ZkemDeviceService>();
         services.AddScoped<SamsungDeviceService>();
+        services.AddScoped<ConnectApiService>();
+        // Register ConnectApiService as a typed HttpClient
+        services.AddHttpClient();
         services.AddScoped<TellmaAttendanceImporter>(); // with every new scope, a new instance
         services.AddScoped<IDeviceServiceFactory, DeviceServiceFactory>();//DI to return the proper factory
     })
