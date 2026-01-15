@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "Tellma:ClientId": "your-client-id",
+    "Tellma:ClientSecret": "your-client-secret",
+    "Tellma:TenantIds": "1,2,3" // Comma-separated list of tenant IDs
+  },
+  "ConnectionStrings": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+  }
+}
