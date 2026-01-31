@@ -1,4 +1,5 @@
-﻿using Tellma.AttendanceImporter.Contract;
+﻿using Tellma.AttendanceImporter.Connect;
+using Tellma.AttendanceImporter.Contract;
 using Tellma.AttendanceImporter.Samsung;
 using Tellma.AttendanceImporter.Zkem;
 
@@ -9,7 +10,8 @@ namespace Tellma.AttendanceImporter.WinService
         private readonly Dictionary<string, IDeviceService> _serviceRegistry;
         public DeviceServiceFactory(
             ZkemDeviceService zkemService,
-            SamsungDeviceService samsungService
+            SamsungDeviceService samsungService,
+            ConnectApiService connectApiService
             )
         {
             _serviceRegistry = new Dictionary<string, IDeviceService>(StringComparer.OrdinalIgnoreCase)
@@ -17,7 +19,8 @@ namespace Tellma.AttendanceImporter.WinService
                 // best practice: read dynamically from a folder and add to registry
                 // when dynamic, it needs to check that device type is unique
                 { zkemService.DeviceType, zkemService },
-                { samsungService.DeviceType, samsungService }
+                { samsungService.DeviceType, samsungService },
+                { connectApiService.DeviceType, connectApiService }
             };
         }
         public IDeviceService Create(string deviceType)

@@ -1,0 +1,8 @@
+@baseUrl = https://attend.axc.ae/api/attendance
+@apiKey = aD1HCaT9ig0nQswBij73tZIbC
+
+### Get Attendance with Variables
+GET {{baseUrl}}?Location=Westburry&LastSyncTime=2026-01-28T00:00:00%2B04:00
+X-API-Key: {{apiKey}}
+
+###

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Tellma.AttendanceImporter.Contract;
 
 namespace Tellma.AttendanceImporter.Tests
 {
@@ -23,6 +22,7 @@ namespace Tellma.AttendanceImporter.Tests
             var importer = new TellmaAttendanceImporter(
                 new MockDeviceServiceFactory(),
                 new NullLogger<TellmaAttendanceImporter>(),
+                new MockTellmaSerivce(),
                 Options.Create(_options)
                 );
 
@@ -33,39 +33,6 @@ namespace Tellma.AttendanceImporter.Tests
         }
         
         // Add another test
-    }
 
-    public class MockDeviceServiceFactory : IDeviceServiceFactory
-    {
-        public IDeviceService Create(string deviceType)
-        {
-            return new MockDeviceService(); // not using device type
-        }
-    }
-
-    public class MockDeviceService : IDeviceService
-    {
-        public string DeviceType => "Mock";
-
-        public Task<IEnumerable<AttendanceRecord>> LoadFromDevice(DeviceInfo info, CancellationToken token)
-        {
-            var result = new List<AttendanceRecord>
-            {
-                new AttendanceRecord(info)
-                {
-                    Time = new DateTime(2023,6,19,8,56,0),
-                    UserId = "19", // Asmaa
-                    IsIn = null
-                },
-                new AttendanceRecord(info)
-                {
-                    Time = new DateTime(2023,6,19,8,58,0),
-                    UserId = "21", // Sara
-                    IsIn = null
-                }
-            };
-
-            return Task.FromResult<IEnumerable<AttendanceRecord>>(result);
-        }
     }
 }

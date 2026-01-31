@@ -2,26 +2,23 @@
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using Tellma.Api.Dto;
-using Tellma.AttendanceImporter.Contract;
 using Tellma.Client;
 using Tellma.Model.Application;
+using Tellma.AttendanceImporter.Contract;
 
-namespace Tellma.AttendanceImporter
+namespace Tellma.AttendanceImporter.TellmaAPI
 {
-    internal class TellmaService : ITellmaService
+    public class TellmaService : ITellmaService
     {
-        private readonly TellmaClient _client; // wrapper calling Tellma server => client
-        private readonly ILogger<TellmaAttendanceImporter> logger;
-        public TellmaService(ILogger<TellmaAttendanceImporter> logger, IOptions<TellmaOptions> options)
-        {
-            // Create the client
-            _client = new TellmaClient(
-                baseUrl: "https://web.tellma.com",
-                authorityUrl: "https://web.tellma.com",
-                clientId: options.Value.ClientId,
-                clientSecret: options.Value.ClientSecret);
+        private readonly TellmaClient _client;
+        private readonly ILogger<TellmaService> _logger;
 
-            this.logger = logger;
+        public TellmaService(TellmaClient client, ILogger<TellmaService> logger)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            _logger = logger;
         }
         public async Task<IEnumerable<DeviceInfo>> GetDeviceInfos(int tenantId, CancellationToken token)
         {
@@ -35,7 +32,7 @@ namespace Tellma.AttendanceImporter
 
             if (deviceDefinitionResult.Data.Count == 0)
             {
-                logger.LogWarning($"There is no resource definition for TNA devices");
+                _logger.LogWarning($"There is no resource definition for TNA devices");
                 return Enumerable.Empty<DeviceInfo>();
             }
             var syncResult = await tenantClient
@@ -104,7 +101,7 @@ namespace Tellma.AttendanceImporter
                 throw new Exception($"Tenant id {tenantId} does not have line definition with code: ToHRAttendanceLog.E");
             }
             var lineDefinitionId = lineDefinitionResult.Data[0].Id;
-           
+
             // records brought already are after last sync date
             foreach (var recordGroup in records
                 .GroupBy(r => new { r.DeviceInfo.DutyStationId, r.Time.Date })
@@ -123,8 +120,8 @@ namespace Tellma.AttendanceImporter
                 {
                     Filter = $"PostingDate = '{gregorianDate}' && NotedAgentId = {dutyStationId} && State >= 0"
                 }, token);
-                logger.LogWarning($"({docResults.Data.Count}) documents found with posting date {gregorianDate}");
- 
+                _logger.LogInformation($"({docResults.Data.Count}) documents found with posting date {gregorianDate}");
+
                 DocumentForSave documentForSave;
                 if (docResults.Data.Count > 0)
                 {

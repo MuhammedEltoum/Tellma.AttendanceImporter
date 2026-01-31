@@ -1,6 +1,6 @@
 ﻿namespace Tellma.AttendanceImporter.Connect
 {
-    internal class ConnectAttendanceRecord
+    public class ConnectAttendanceRecord
     {
         public string UserId { get; set; } = string.Empty;
         public DateTime Time { get; set; }

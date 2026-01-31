@@ -1,47 +1,118 @@
-﻿using System.Globalization;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Encodings.Web;
+﻿using Microsoft.Extensions.Logging;
 using Tellma.AttendanceImporter.Contract;
+using Tellma.Utilities.EmailLogger;
 
 namespace Tellma.AttendanceImporter.Connect
 {
-    public class ConnectApiService : IDeviceService
+    public class ConnectApiService : IConnectApiService
     {
-        private IHttpClientFactory _clientFactory;
+        private readonly IConnectApiClient _connectApiClient;
+        private readonly ITellmaApiClient _tellmaApiClient;
+        private readonly ILogger<ConnectApiService> _logger;
+        private readonly IDailyEmailService _dailyEmailService;
+        private readonly DateTime _earliestAttendanceDate = new(2026, 01, 02);
+        private readonly object _lock = new();
+
         public string DeviceType => "Connect";
-        public ConnectApiService(IHttpClientFactory clientFactory)
+
+        public ConnectApiService(
+            IConnectApiClient connectApiClient,
+            ITellmaApiClient tellmaApiClient,
+            IDailyEmailService dailyEmailService,
+            ILogger<ConnectApiService> logger)
         {
-            _clientFactory = clientFactory; 
+            _connectApiClient = connectApiClient ?? throw new ArgumentNullException(nameof(connectApiClient));
+            _tellmaApiClient = tellmaApiClient ?? throw new ArgumentNullException(nameof(tellmaApiClient));
+            _dailyEmailService = dailyEmailService ?? throw new ArgumentNullException(nameof(dailyEmailService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
         public async Task<IEnumerable<AttendanceRecord>> LoadFromDevice(DeviceInfo info, CancellationToken token)
         {
-            // Implementation for Connect devices goes here
-            // Call API endpoints, process data, and return attendance records
-            // Deserialize JSON response from Connect API into AttendanceRecord objects
-            HttpClient client = _clientFactory.CreateClient("ConnectApiClient");
+            ArgumentNullException.ThrowIfNull(info);
+            ArgumentException.ThrowIfNullOrWhiteSpace(info.Name);
 
-            UriBuilder builder = new("https://api.connectdevice.com/attendance") // placeholder URL
+            try
             {
-                Query = $"location={UrlEncoder.Default.Encode(info.IpAddress??"")}&lastSyncTime={UrlEncoder.Default.Encode(info.LastSyncTime.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture))}"//format using Gregorian calendar
-            };
+                var connectEmployees = await _tellmaApiClient.GetConnectEmployees(info.Name, token);
 
-            var message = new HttpRequestMessage
+                // Check and send daily email if needed
+                var invalidEmployees = connectEmployees
+                    .Where(emp => String.IsNullOrWhiteSpace(emp.BitrixId))
+                    .ToList();
+
+                await _dailyEmailService.CheckAndSendDailyReportAsync(invalidEmployees, token);
+
+                // Halt import if an employee exist with no bitrixId.
+                if (invalidEmployees.Count > 0)
+                {
+                    _logger.LogWarning("An employee has no BitrixId. Service will halt importing until amending the employee.");
+                    return Enumerable.Empty<AttendanceRecord>();
+                }
+
+                var validEmployees = connectEmployees
+                    .Where(e => !string.IsNullOrWhiteSpace(e.BitrixId))
+                    .ToList();
+
+                _logger.LogDebug("Retrieved {Count} Connect employees", validEmployees.Count);
+
+                var location = info.Name.Replace(" device", "", StringComparison.OrdinalIgnoreCase);
+                var connectAttendanceRecords = await _connectApiClient.GetAttendanceRecords(
+                    location, info.LastSyncTime, token);
+
+                if (connectAttendanceRecords.Count == 0)
+                {
+                    _logger.LogWarning(
+                        "No attendance records retrieved from Connect API for device {DeviceName}",
+                        info.Name);
+                    return Enumerable.Empty<AttendanceRecord>();
+                }
+
+                _logger.LogDebug(
+                    "Retrieved {Count} attendance records from Connect API",
+                    connectAttendanceRecords.Count);
+
+                var filteredRecords = FilterAttendanceRecords(connectAttendanceRecords, validEmployees);
+                return MapToAttendanceRecords(filteredRecords, info);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                Method = HttpMethod.Get,
-                RequestUri = builder.Uri
-            };
-            
-            var response = await client.SendAsync(message, token); // Placeholder for actual API call
-            var connectAttendanceRecords = await response.Content.ReadFromJsonAsync<List<ConnectAttendanceRecord>>(cancellationToken: token);
+                _logger.LogError(ex,
+                    "Error loading attendance records from Connect device {DeviceName}",
+                    info.Name);
+                throw;
+            }
+        }
 
-            return connectAttendanceRecords!.Select(car => new AttendanceRecord (info)
+        private List<ConnectAttendanceRecord> FilterAttendanceRecords(
+            List<ConnectAttendanceRecord> attendanceRecords,
+            List<ConnectEmployee> connectEmployees)
+        {
+            var employeeLookup = connectEmployees.ToDictionary(e => e.BitrixId!);
+
+            var invalidUserIds = attendanceRecords
+                .Where(ar => !employeeLookup.ContainsKey(ar.UserId))
+                .Select(ar => ar.UserId)
+                .Distinct()
+                .ToList();
+
+            return attendanceRecords
+                .Where(ar => employeeLookup.TryGetValue(ar.UserId, out var employee) &&
+                           ar.Time.Date >= employee.JoiningDate &&
+                           ar.Time.Date >= _earliestAttendanceDate.Date)
+                .ToList();
+        }
+
+        private static IEnumerable<AttendanceRecord> MapToAttendanceRecords(
+            List<ConnectAttendanceRecord> connectRecords,
+            DeviceInfo deviceInfo)
+        {
+            return connectRecords.Select(car => new AttendanceRecord(deviceInfo)
             {
                 UserId = car.UserId,
                 Time = car.Time,
                 IsIn = car.IsIn
             });
         }
-
     }
 }

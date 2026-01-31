@@ -1,6 +1,6 @@
 ﻿using Tellma.AttendanceImporter.Contract;
 
-namespace Tellma.AttendanceImporter
+namespace Tellma.AttendanceImporter.TellmaAPI
 {
     public interface ITellmaService
     {
