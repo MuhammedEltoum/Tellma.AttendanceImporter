@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 .http
+/Tellma.AttendanceImporter.Connect.Tests/Attendance-api.http
