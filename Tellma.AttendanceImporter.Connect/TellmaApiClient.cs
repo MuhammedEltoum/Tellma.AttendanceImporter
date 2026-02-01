@@ -27,7 +27,7 @@ namespace Tellma.AttendanceImporter.Connect
                            .FirstOrDefault();
         }
 
-        public async Task<List<ConnectEmployee>> GetConnectEmployees(string deviceName, CancellationToken token)
+        public async Task<List<ConnectEmployee>> GetConnectEmployees(CancellationToken token)
         {
             var tenantClient = _tellmaClient.Application(_tenantId);
 
@@ -56,14 +56,11 @@ namespace Tellma.AttendanceImporter.Connect
                 .Agents(employeeDefinitionId)
                 .GetEntities(new GetArguments
                 {
+                    Select = "Code, Name, ExternalReference, FromDate, Agent2.Code",
                     Filter = filter,
                     Top = int.MaxValue,
-                    //Expand = "Agent2"
+                    Expand = "Agent2"
                 }, token);
-
-            var issue = connectEmployeesResult
-                .Data
-                .FirstOrDefault(agent => agent.Code == "E0320");
 
             var result = connectEmployeesResult.Data
                 .Where(e => e.FromDate.HasValue)

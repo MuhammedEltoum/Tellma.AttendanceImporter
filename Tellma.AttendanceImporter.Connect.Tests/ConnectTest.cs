@@ -42,7 +42,7 @@ namespace Tellma.AttendanceImporter.Connect.Tests
                 new ConnectAttendanceRecord { UserId = "1002", Time = new DateTime(2026, 1, 3, 9, 0, 0), IsIn = true }
             };
 
-            _mockTellmaApiClient.Setup(x => x.GetConnectEmployees("Mock Device", It.IsAny<CancellationToken>()))
+            _mockTellmaApiClient.Setup(x => x.GetConnectEmployees(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employees);
 
             _mockConnectApiClient.Setup(x => x.GetAttendanceRecords(
@@ -64,7 +64,7 @@ namespace Tellma.AttendanceImporter.Connect.Tests
             Console.WriteLine($"Records count: {records.Count()}");
 
             // Verify what was actually called
-            _mockTellmaApiClient.Verify(x => x.GetConnectEmployees("Mock Device", It.IsAny<CancellationToken>()), Times.Once);
+            _mockTellmaApiClient.Verify(x => x.GetConnectEmployees(It.IsAny<CancellationToken>()), Times.Once);
             _mockConnectApiClient.Verify(x => x.GetAttendanceRecords(
                 It.IsAny<string>(),
                 It.IsAny<DateTime?>(),

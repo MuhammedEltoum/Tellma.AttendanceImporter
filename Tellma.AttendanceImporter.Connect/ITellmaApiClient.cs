@@ -2,6 +2,6 @@
 {
     public interface ITellmaApiClient
     {
-        public Task<List<ConnectEmployee>> GetConnectEmployees(string deviceName, CancellationToken token);
+        public Task<List<ConnectEmployee>> GetConnectEmployees(CancellationToken token);
     }
 }

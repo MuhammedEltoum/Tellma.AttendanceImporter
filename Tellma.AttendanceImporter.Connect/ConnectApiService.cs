@@ -34,7 +34,7 @@ namespace Tellma.AttendanceImporter.Connect
 
             try
             {
-                var connectEmployees = await _tellmaApiClient.GetConnectEmployees(info.Name, token);
+                var connectEmployees = await _tellmaApiClient.GetConnectEmployees(token);
 
                 // Check and send daily email if needed
                 var invalidEmployees = connectEmployees
@@ -46,7 +46,8 @@ namespace Tellma.AttendanceImporter.Connect
                 // Halt import if an employee exist with no bitrixId.
                 if (invalidEmployees.Count > 0)
                 {
-                    _logger.LogWarning("An employee has no BitrixId. Service will halt importing until amending the employee.");
+                    _logger.LogWarning("Following employees do not have BitrixId. \n Service will halt importing until amending the employee. \n {Employees}",
+                        String.Join("\n", invalidEmployees.Select(emp => $"{emp.Code}: {emp.Name}")));
                     return Enumerable.Empty<AttendanceRecord>();
                 }
 
