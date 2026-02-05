@@ -45,9 +45,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddScoped<ITellmaApiClient, TellmaApiClient>();
         services.AddScoped<ZkemDeviceService>();
         services.AddScoped<SamsungDeviceService>();
+        services.AddScoped<ConnectApiService>();
         services.AddScoped<IDailyEmailService, DailyEmailService>();
 
-        services.AddScoped<ConnectApiService>();
         services.AddScoped<ITellmaApiClient, TellmaApiClient>();
         services.AddScoped<TellmaAttendanceImporter>();
         services.AddScoped<ITellmaService, TellmaService>();

@@ -63,7 +63,7 @@ namespace Tellma.AttendanceImporter.Connect
 
                 var content = await response.Content.ReadAsStringAsync(token);
 
-                var result = JsonSerializer.Deserialize<List<ConnectAttendanceRecord>>(
+                return JsonSerializer.Deserialize<List<ConnectAttendanceRecord>>(
                     content,
                     new JsonSerializerOptions
                     {
@@ -71,16 +71,16 @@ namespace Tellma.AttendanceImporter.Connect
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                     }) ?? new List<ConnectAttendanceRecord>();
 
-                // Filter records after deserialization (more efficient)
-                var filteredResult = lastSyncTime.HasValue
-                    ? result.Where(r => r.Time > lastSyncTime.Value).ToList()
-                    : result;
+                //// Filter records after deserialization (more efficient)
+                //var filteredResult = lastSyncTime.HasValue
+                //    ? result.Where(r => r.Time > lastSyncTime.Value).ToList()
+                //    : result;
 
-                _logger.LogInformation(
-                    "Fetched {TotalCount} records, {FilteredCount} after filtering for location {Location}",
-                    result.Count, filteredResult.Count, location);
+                //_logger.LogInformation(
+                //    "Fetched {TotalCount} records, {FilteredCount} after filtering for location {Location}",
+                //    result.Count, filteredResult.Count, location);
 
-                return filteredResult;
+                //return filteredResult;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

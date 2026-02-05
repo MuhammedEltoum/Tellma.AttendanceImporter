@@ -3,6 +3,6 @@
     public interface IDeviceService
     {
         public string DeviceType { get;}
-        Task<IEnumerable<AttendanceRecord>> LoadFromDevice(DeviceInfo info, CancellationToken token);   
+        Task<IEnumerable<AttendanceRecord>> LoadFromDevice(DeviceInfo info, CancellationToken token);
     }
 }
