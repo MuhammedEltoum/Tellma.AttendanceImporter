@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tellma.AttendanceImporter.Connect\Tellma.AttendanceImporter.Connect.csproj" />
+    <ProjectReference Include="..\Tellma.AttendanceImporter.FunctionWorker\Tellma.AttendanceImporter.FunctionWorker.csproj" />
     <ProjectReference Include="..\Tellma.AttendanceImporter.Samsung\Tellma.AttendanceImporter.Samsung.csproj" />
     <ProjectReference Include="..\Tellma.AttendanceImporter.TellmaAPI\Tellma.AttendanceImporter.TellmaAPI.csproj" />
     <ProjectReference Include="..\Tellma.AttendanceImporter.Zkem\Tellma.AttendanceImporter.Zkem.csproj" />

@@ -39,7 +39,9 @@ namespace Tellma.AttendanceImporter.WinService
             {
                 try
                 {
-                    // Get current time in Gulf Time (UAE)
+                    // RUN THIS GUY!
+                    await RunThisGuy(stoppingToken);
+                   // Get current time in Gulf Time (UAE)
                     var gulfTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _gulfTimeZone);
                     var currentTime = gulfTime.TimeOfDay;
 
@@ -103,6 +105,21 @@ namespace Tellma.AttendanceImporter.WinService
                 // Wait for the fixed 10-minute interval before next execution
                 await Task.Delay(_fixedInterval, stoppingToken);
             }
+        }
+
+        /// <summary>
+        /// This is but a wrapper to create a scope and run the actual importer logic, which is in TellmaAttendanceImporter.ImportToTellma
+        /// I DONT WANT TO WAIT TILL 8:00 AM
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
+        private async Task RunThisGuy(CancellationToken stoppingToken)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Worker>>();
+
+            var importer = scope.ServiceProvider.GetRequiredService<TellmaAttendanceImporter>();
+            await importer.ImportToTellma(stoppingToken);
         }
 
         private bool IsWithinWorkingHours(TimeSpan currentTime)

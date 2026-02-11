@@ -34,31 +34,42 @@ namespace Tellma.AttendanceImporter.Connect
         }
 
         public async Task<List<ConnectAttendanceRecord>> GetAttendanceRecords(
-            string location,
-            DateTime? lastSyncTime,
-            CancellationToken token)
+     string location,
+     DateTime? lastSyncTime,
+     CancellationToken token)
         {
             try
             {
                 var queryParams = new List<string>
-                {
-                    $"Location={Uri.EscapeDataString(location)}"
-                };
+        {
+            $"Location={Uri.EscapeDataString(location)}"
+        };
 
                 if (lastSyncTime.HasValue)
                 {
-                    // Format with timezone properly
+                    // Format: yyyy-MM-ddTHH:mm:ss+04:00
                     var lastSyncString = lastSyncTime.Value.ToString("yyyy-MM-ddTHH:mm:ss");
-                    queryParams.Add($"LastSyncTime={Uri.EscapeDataString(lastSyncString)}");
+                    queryParams.Add($"LastSyncTime={Uri.EscapeDataString(lastSyncString + "+04:00")}");
                 }
 
                 var queryString = string.Join("&", queryParams);
-                var url = $"api/attendance?{queryString}%2B04:00";
+                var url = $"api/attendance?{queryString}";
 
                 using var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.Add("X-API-Key", _apiKey);
 
                 var response = await _httpClient.SendAsync(request, token);
+
+                // Log response details
+                _logger.LogInformation("Response Status: {StatusCode}", response.StatusCode);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync(token);
+                    _logger.LogError("Error Response: {ErrorContent}", errorContent);
+                    _logger.LogError("Response Headers: {@Headers}", response.Headers);
+                }
+
                 response.EnsureSuccessStatusCode();
 
                 var content = await response.Content.ReadAsStringAsync(token);
@@ -70,17 +81,6 @@ namespace Tellma.AttendanceImporter.Connect
                         PropertyNameCaseInsensitive = true,
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                     }) ?? new List<ConnectAttendanceRecord>();
-
-                //// Filter records after deserialization (more efficient)
-                //var filteredResult = lastSyncTime.HasValue
-                //    ? result.Where(r => r.Time > lastSyncTime.Value).ToList()
-                //    : result;
-
-                //_logger.LogInformation(
-                //    "Fetched {TotalCount} records, {FilteredCount} after filtering for location {Location}",
-                //    result.Count, filteredResult.Count, location);
-
-                //return filteredResult;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
