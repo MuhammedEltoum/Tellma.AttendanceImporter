@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Tellma.AttendanceImporter.Connect;
+﻿using Tellma.AttendanceImporter.Connect;
 using Tellma.AttendanceImporter.Contract;
 using Tellma.AttendanceImporter.Samsung;
 using Tellma.AttendanceImporter.Zkem;

@@ -48,6 +48,7 @@ namespace Tellma.AttendanceImporter.Connect
                 if (lastSyncTime.HasValue)
                 {
                     // Format: yyyy-MM-ddTHH:mm:ss+04:00
+                    //var lastSyncString = new DateTime(2025, 7, 17).ToString("yyyy-MM-ddTHH:mm:ss");
                     var lastSyncString = lastSyncTime.Value.ToString("yyyy-MM-ddTHH:mm:ss");
                     queryParams.Add($"LastSyncTime={Uri.EscapeDataString(lastSyncString + "+04:00")}");
                 }

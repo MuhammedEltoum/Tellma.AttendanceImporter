@@ -8,16 +8,15 @@ namespace Tellma.AttendanceImporter.WinService
     {
         // DI container
         private readonly IServiceProvider _serviceProvider;
-        private readonly ImporterOptions _options;
+
         private readonly TimeSpan _fixedInterval = TimeSpan.FromMinutes(10); // Fixed 10-minute interval
         private readonly TimeSpan _startHour = TimeSpan.FromHours(6); // 6 AM Gulf Time
         private readonly TimeSpan _endHour = TimeSpan.FromHours(21); // 9 PM Gulf Time (21:00 in 24-hour format)
         private readonly TimeZoneInfo _gulfTimeZone;
 
-        public Worker(IServiceProvider serviceProvider, IOptions<ImporterOptions> options)
+        public Worker(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _options = options.Value;
 
             // Initialize Gulf Standard Time zone (UAE)
             // For .NET Core/.NET 5+, TZConvert is recommended for cross-platform compatibility

@@ -10,7 +10,6 @@ namespace Tellma.AttendanceImporter.Connect
         private readonly ITellmaApiClient _tellmaApiClient;
         private readonly ILogger<ConnectApiService> _logger;
         private readonly IDailyEmailService _dailyEmailService;
-        private readonly DateTime _earliestAttendanceDate = new(2026, 01, 02);
         private readonly object _lock = new();
 
         public string DeviceType => "Connect";
@@ -42,13 +41,6 @@ namespace Tellma.AttendanceImporter.Connect
                     .ToList();
 
                 await _dailyEmailService.CheckAndSendDailyReportAsync(invalidEmployees, token);
-
-                // Halt import if an employee exist with no bitrixId.
-                if (invalidEmployees.Count > 0)
-                {
-                    _logger.LogWarning("An employee has no BitrixId. Service will halt importing until amending the employee.");
-                    return Enumerable.Empty<AttendanceRecord>();
-                }
 
                 var validEmployees = connectEmployees
                     .Where(e => !string.IsNullOrWhiteSpace(e.BitrixId))
@@ -98,8 +90,7 @@ namespace Tellma.AttendanceImporter.Connect
 
             return attendanceRecords
                 .Where(ar => employeeLookup.TryGetValue(ar.UserId, out var employee) &&
-                           ar.Time.Date >= employee.JoiningDate &&
-                           ar.Time.Date >= _earliestAttendanceDate.Date)
+                           ar.Time.Date >= employee.JoiningDate)
                 .ToList();
         }
 

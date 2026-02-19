@@ -25,10 +25,6 @@ namespace Tellma.AttendanceImporter.Connect
         {
             var now = DateTime.UtcNow;
 
-            // Only check between 2:00-2:05 PM UTC (6:00-6:05 PM Dubai time)
-            if (now.Hour != 14 || now.Minute > 5)
-                return;
-
             lock (_lock)
             {
                 // Check if we already sent email today

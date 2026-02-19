@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.AttendanceImporter.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.AttendanceImporter.TellmaAPI", "Tellma.AttendanceImporter.TellmaAPI\Tellma.AttendanceImporter.TellmaAPI.csproj", "{09EFB3AC-28EF-4E08-B247-B5FB8DF4D322}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.AttendanceImporter.FunctionWorker", "Tellma.AttendanceImporter.FunctionWorker\Tellma.AttendanceImporter.FunctionWorker.csproj", "{847E6690-1189-44A8-85E0-47867E85622A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.AttendanceImporter.FunctionWorker", "Tellma.AttendanceImporter.FunctionWorker\Tellma.AttendanceImporter.FunctionWorker.csproj", "{D5284F8E-3B0B-4EE4-B134-9CFA923A55DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,10 +89,10 @@ Global
 		{09EFB3AC-28EF-4E08-B247-B5FB8DF4D322}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09EFB3AC-28EF-4E08-B247-B5FB8DF4D322}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09EFB3AC-28EF-4E08-B247-B5FB8DF4D322}.Release|Any CPU.Build.0 = Release|Any CPU
-		{847E6690-1189-44A8-85E0-47867E85622A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{847E6690-1189-44A8-85E0-47867E85622A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{847E6690-1189-44A8-85E0-47867E85622A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{847E6690-1189-44A8-85E0-47867E85622A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5284F8E-3B0B-4EE4-B134-9CFA923A55DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5284F8E-3B0B-4EE4-B134-9CFA923A55DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5284F8E-3B0B-4EE4-B134-9CFA923A55DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5284F8E-3B0B-4EE4-B134-9CFA923A55DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

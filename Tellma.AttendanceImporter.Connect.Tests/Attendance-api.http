@@ -2,7 +2,7 @@
 @apiKey = aD1HCaT9ig0nQswBij73tZIbC
 
 ### Get Attendance with Variables
-GET {{baseUrl}}?Location=Westburry&LastSyncTime=2026-01-28T00:00:00%2B04:00
+GET {{baseUrl}}?Location=Metropolis&LastSyncTime=2025-11-01T00:00:00%2B04:00
 X-API-Key: {{apiKey}}
 
 ###

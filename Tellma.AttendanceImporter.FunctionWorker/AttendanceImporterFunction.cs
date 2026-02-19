@@ -1,78 +1,46 @@
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using TimeZoneConverter;
 using Tellma.AttendanceImporter;
 
-namespace Tellma.AttendanceImporter.FunctionWorker
+namespace Tellma.AttendanceImporter.FunctionWorker;
+
+public class AttendanceImporterFunction
 {
-    public class AttendanceImporterFunction
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<AttendanceImporterFunction> _logger;
+
+    public AttendanceImporterFunction(
+        IServiceProvider serviceProvider, 
+        ILogger<AttendanceImporterFunction> logger)
     {
-        private readonly TellmaAttendanceImporter _importer;
-        private readonly TimeZoneInfo _gulfTimeZone;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+    }
 
-        // Constructor Injection: The Importer is injected directly, no need for IServiceProvider scope creation manually
-        public AttendanceImporterFunction(TellmaAttendanceImporter importer)
+    [Function("AttendanceImporter")]
+    public async Task Run(
+        [TimerTrigger("*/10 * * * *")] TimerInfo myTimer, 
+        FunctionContext context)
+    {
+        _logger.LogInformation("C# Timer trigger function executed at: {time}", DateTime.Now);
+        
+        using var scope = _serviceProvider.CreateScope();
+
+        try
         {
-            _importer = importer;
-
-            // Initialize Gulf Standard Time zone (UAE) matches Worker.cs logic
-            try
-            {
-                _gulfTimeZone = TZConvert.GetTimeZoneInfo("Asia/Dubai");
-            }
-            catch
-            {
-                _gulfTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Arabian Standard Time");
-            }
+            var importer = scope.ServiceProvider.GetRequiredService<TellmaAttendanceImporter>();
+            await importer.ImportToTellma(context.CancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled Error in AttendanceImporter");
         }
 
-        // CRON: 0 */10 6-20 * * * = Every 10 minutes
-        // Note: CRON triggers in Azure are UTC by default. 
-        // We run it every 10 minutes continuously, but filter execution inside the code based on UAE time.
-        [FunctionName("AttendanceImporter")]
-        public async Task Run(
-            [TimerTrigger("0 */10 6-20 * * *", RunOnStartup = false)] TimerInfo timer,
-            ILogger log,
-            CancellationToken cancellationToken)
+        if (myTimer.ScheduleStatus is not null)
         {
-            try
-            {
-                // 1. Time Zone Check (Ported from Worker.cs)
-                var gulfTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _gulfTimeZone);
-                var currentTime = gulfTime.TimeOfDay;
-
-                var startHour = TimeSpan.FromHours(6);
-                var endHour = TimeSpan.FromHours(20);
-
-                // 2. Execution Gate
-                if (currentTime >= startHour && currentTime <= endHour)
-                {
-                    log.LogInformation($"[Working Hours] Starting import. Gulf Time: {gulfTime:HH:mm:ss}");
-
-                    // 3. execution
-                    // We use the function's cancellationToken directly
-                    await _importer.ImportToTellma(cancellationToken);
-
-                    log.LogInformation("Import completed successfully");
-                }
-                else
-                {
-                    log.LogInformation($"[Off Hours] Current Gulf Time: {gulfTime:HH:mm:ss}. Skipping execution.");
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                log.LogWarning("Import operation was cancelled.");
-            }
-            catch (Exception ex)
-            {
-                log.LogError(ex, "Error occurred during attendance import");
-                // In Azure Functions, throwing here will mark the execution as 'Failed' in the dashboard
-                throw;
-            }
+            _logger.LogInformation("Next timer schedule at: {next}", myTimer.ScheduleStatus.Next);
         }
     }
 }

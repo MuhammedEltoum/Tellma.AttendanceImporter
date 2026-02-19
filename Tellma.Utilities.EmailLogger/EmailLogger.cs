@@ -52,7 +52,7 @@ namespace Tellma.Utilities.EmailLogger
                     exception,
                     formatter(state, exception),
                     logLevel,
-                    _options.InstallationIdentifier,
+                    _options.InstallationIdentifier ?? "Attendance Importer",
                     eventId
                 );
 
@@ -61,7 +61,7 @@ namespace Tellma.Utilities.EmailLogger
                     exception,
                     formatter(state, exception),
                     logLevel,
-                    _options.InstallationIdentifier,
+                    _options.InstallationIdentifier ?? "Attendance Importer",
                     eventId
                 );
 

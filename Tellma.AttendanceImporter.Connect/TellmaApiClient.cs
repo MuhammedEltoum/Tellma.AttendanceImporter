@@ -49,7 +49,6 @@ namespace Tellma.AttendanceImporter.Connect
             string filter = "Lookup8.Code = 'Connect' " +
                                 "AND Code <> 'E0317' " + // Exclude CEO from attendance service
                                 "AND Code <> 'E0318' " + // Exclude GM from attendance service
-                                //"AND Code <> 'E0333' " + // Exclude this guy just because.
                                 "AND FromDate <> NULL " +
                                 $"AND FromDate <= '{DateTime.Now.ToString("yyyy-MM-ddT00:00:00")}' " +
                                 "AND (Agent2.Code = 'HQ1' OR Agent2.Code = 'HQ2' OR Agent2.Code = 'HQ3' OR Agent2.Code = 'HQ4')";
@@ -60,12 +59,8 @@ namespace Tellma.AttendanceImporter.Connect
                 {
                     Filter = filter,
                     Top = int.MaxValue,
-                    //Expand = "Agent2"
+                    Expand = "Agent2"
                 }, token);
-
-            var issue = connectEmployeesResult
-                .Data
-                .FirstOrDefault(agent => agent.Code == "E0320");
 
             var result = connectEmployeesResult.Data
                 .Where(e => e.FromDate.HasValue)
