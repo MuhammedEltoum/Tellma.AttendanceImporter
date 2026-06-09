@@ -365,3 +365,4 @@ FodyWeavers.xsd
 .http
 /Tellma.AttendanceImporter.WinService/Tellma.AttendanceImporter.WinService.csproj
 /Tellma.AttendanceImporter.Connect.Tests/Attendance-api.http
+/Tellma.AttendanceImporter.Connect/emp-lookup.http
